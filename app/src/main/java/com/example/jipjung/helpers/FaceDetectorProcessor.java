@@ -30,6 +30,8 @@ import com.google.mlkit.vision.face.FaceDetection;
 import com.google.mlkit.vision.face.FaceDetector;
 import com.google.mlkit.vision.face.FaceDetectorOptions;
 import com.google.mlkit.vision.face.FaceLandmark;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -39,6 +41,8 @@ public class FaceDetectorProcessor extends VisionProcessorBase<List<Face>> {
     private static final String TAG = "FaceDetectorProcessor";
 
     private final FaceDetector detector;
+
+    private final HashMap<Integer, FaceDrowsiness> drowsinessHashMap = new HashMap<>();
 
     public FaceDetectorProcessor(Context context) {
         super(context);
@@ -67,7 +71,13 @@ public class FaceDetectorProcessor extends VisionProcessorBase<List<Face>> {
     @Override
     protected void onSuccess(@NonNull List<Face> faces, @NonNull GraphicOverlay graphicOverlay) {
         for (Face face : faces) {
-            graphicOverlay.add(new FaceGraphic(graphicOverlay, face));
+            FaceDrowsiness faceDrowsiness = drowsinessHashMap.get(face.getTrackingId());
+            if (faceDrowsiness == null) {
+                faceDrowsiness = new FaceDrowsiness();
+                drowsinessHashMap.put(face.getTrackingId(), faceDrowsiness);
+            }
+            boolean isDrowsy = faceDrowsiness.isDrowsy(face);
+            graphicOverlay.add(new FaceGraphic(graphicOverlay, face, isDrowsy));
             logExtrasForTesting(face);
         }
     }

@@ -59,11 +59,13 @@ public class FaceGraphic extends GraphicOverlay.Graphic {
     private final Paint[] labelPaints;
 
     private volatile Face face;
+    private boolean isDrowsy;
 
-    FaceGraphic(GraphicOverlay overlay, Face face) {
+    FaceGraphic(GraphicOverlay overlay, Face face, boolean isDrowsy) {
         super(overlay);
 
         this.face = face;
+        this.isDrowsy = isDrowsy;
         final int selectedColor = Color.WHITE;
 
         facePositionPaint = new Paint();
@@ -123,6 +125,13 @@ public class FaceGraphic extends GraphicOverlay.Graphic {
                             idPaints[colorID].measureText(
                                     String.format(Locale.US, "Happiness: %.2f", face.getSmilingProbability())));
         }
+        // Drowsy
+        yLabelOffset -= lineHeight;
+        textWidth =
+                Math.max(
+                        textWidth,
+                        idPaints[colorID].measureText(
+                                String.format(Locale.US, "Drowsy: %s", isDrowsy)));
         if (face.getLeftEyeOpenProbability() != null) {
             yLabelOffset -= lineHeight;
             textWidth =
@@ -189,6 +198,14 @@ public class FaceGraphic extends GraphicOverlay.Graphic {
                     idPaints[colorID]);
             yLabelOffset += lineHeight;
         }
+
+        // Drowsy
+        canvas.drawText(
+                "Drowsy: " + String.format(Locale.US, "%s", isDrowsy),
+                left,
+                top + yLabelOffset,
+                idPaints[colorID]);
+        yLabelOffset += lineHeight;
 
         FaceLandmark leftEye = face.getLandmark(FaceLandmark.LEFT_EYE);
         if (face.getLeftEyeOpenProbability() != null) {
