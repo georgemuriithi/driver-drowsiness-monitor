@@ -488,7 +488,7 @@ public class CameraSource {
         int rotation = windowManager.getDefaultDisplay().getRotation();
         switch (rotation) {
             case Surface.ROTATION_0:
-                degrees = 0;
+                degrees = 90;
                 break;
             case Surface.ROTATION_90:
                 degrees = 90;
