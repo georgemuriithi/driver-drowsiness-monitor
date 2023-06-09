@@ -73,7 +73,7 @@ public class CameraSource {
 
     private Camera camera;
 
-    private int facing = CAMERA_FACING_BACK;
+    private int facing = CAMERA_FACING_FRONT;
 
     /** Rotation of the device, and thus the associated preview images captured from the device. */
     private int rotationDegrees;
@@ -488,7 +488,7 @@ public class CameraSource {
         int rotation = windowManager.getDefaultDisplay().getRotation();
         switch (rotation) {
             case Surface.ROTATION_0:
-                degrees = 90;
+                degrees = 0;
                 break;
             case Surface.ROTATION_90:
                 degrees = 90;
