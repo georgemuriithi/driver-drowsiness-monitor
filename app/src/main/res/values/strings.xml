@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">JipJung</string>
+    <string name="man_with_car">Man with Car</string>
+    <string name="slogan">Enhancing Driver Safety</string>
+    <string name="intro">Real-time Drowsiness Monitoring</string>
     <string name="start">Start</string>
 </resources>
