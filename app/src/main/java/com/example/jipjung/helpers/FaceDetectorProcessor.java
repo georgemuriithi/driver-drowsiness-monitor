@@ -18,8 +18,12 @@ package com.example.jipjung.helpers;
 
 import android.content.Context;
 import android.graphics.PointF;
+import android.media.AudioAttributes;
+import android.media.SoundPool;
 import android.util.Log;
 import androidx.annotation.NonNull;
+
+import com.example.jipjung.R;
 import com.google.android.gms.tasks.Task;
 import com.google.mlkit.vision.common.InputImage;
 // import com.google.mlkit.vision.demo.GraphicOverlay;
@@ -44,6 +48,11 @@ public class FaceDetectorProcessor extends VisionProcessorBase<List<Face>> {
 
     private final HashMap<Integer, FaceDrowsiness> drowsinessHashMap = new HashMap<>();
 
+    private SoundPool soundPool;
+    private final int warningSoundID;
+    int warningStreamID;
+    boolean isWarningPlaying;
+
     public FaceDetectorProcessor(Context context) {
         super(context);
         // FaceDetectorOptions faceDetectorOptions = PreferenceUtils.getFaceDetectorOptions(context);
@@ -55,12 +64,24 @@ public class FaceDetectorProcessor extends VisionProcessorBase<List<Face>> {
                 .build();
         Log.v(MANUAL_TESTING_LOG, "Face detector options: " + faceDetectorOptions);
         detector = FaceDetection.getClient(faceDetectorOptions);
+
+        AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_ALARM)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build();
+        soundPool = new SoundPool.Builder()
+                .setAudioAttributes(audioAttributes)
+                .build();
+        warningSoundID = soundPool.load(context, R.raw.warning_sound, 1);
     }
 
     @Override
     public void stop() {
         super.stop();
         detector.close();
+
+        soundPool.release();
+        soundPool = null;
     }
 
     @Override
@@ -78,7 +99,18 @@ public class FaceDetectorProcessor extends VisionProcessorBase<List<Face>> {
             }
             boolean isDrowsy = faceDrowsiness.isDrowsy(face);
             graphicOverlay.add(new FaceGraphic(graphicOverlay, face, isDrowsy));
+
+            // Play warning sound
+            if (isDrowsy && !isWarningPlaying) {
+                warningStreamID = soundPool.play(warningSoundID, 1, 1, 0, -1, 2);
+                isWarningPlaying = true;
+            } else if (!isDrowsy && isWarningPlaying) {
+                soundPool.stop(warningStreamID);
+                isWarningPlaying = false;
+            }
+
             logExtrasForTesting(face);
+            break; // Only one face
         }
     }
 
