@@ -60,7 +60,6 @@ public class FaceDetectorProcessor extends VisionProcessorBase<List<Face>> {
                 .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
                 .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL)
                 .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_ALL)
-                .enableTracking()
                 .build();
         Log.v(MANUAL_TESTING_LOG, "Face detector options: " + faceDetectorOptions);
         detector = FaceDetection.getClient(faceDetectorOptions);
